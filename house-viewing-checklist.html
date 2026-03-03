@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Viewing Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #f5f0e8;
+    --ink: #1a1410;
+    --rust: #c0392b;
+    --amber: #e67e22;
+    --sage: #2c4a3e;
+    --muted: #7a6e63;
+    --rule: #d4c9b8;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  header {
+    border-top: 4px solid var(--ink);
+    padding: 1.5rem 0 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .alert-banner {
+    background: var(--rust);
+    color: white;
+    padding: 0.8rem 1rem;
+    margin-bottom: 2rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    border-left: 5px solid #8b1a1a;
+  }
+
+  .alert-banner strong {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    opacity: 0.85;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .section-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  .tag-critical { background: #fde8e6; color: var(--rust); border: 1px solid #f5c2be; }
+  .tag-important { background: #fef3e6; color: #a85a00; border: 1px solid #f5dcb0; }
+  .tag-general { background: #e8f0ec; color: var(--sage); border: 1px solid #c0d4c8; }
+
+  .checklist {
+    list-style: none;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--rule);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    cursor: pointer;
+    transition: background 0.15s;
+    padding-left: 0.25rem;
+    border-radius: 3px;
+  }
+
+  .checklist li:hover { background: rgba(0,0,0,0.02); }
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist li.checked {
+    opacity: 0.45;
+    text-decoration: line-through;
+    text-decoration-color: var(--muted);
+  }
+
+  .cb {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border: 2px solid var(--ink);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+
+  .checked .cb {
+    background: var(--ink);
+  }
+
+  .checked .cb::after {
+    content: '✓';
+    color: var(--cream);
+    font-size: 0.65rem;
+    font-weight: bold;
+  }
+
+  .item-text { flex: 1; }
+  .item-note {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+    font-style: italic;
+  }
+
+  .priority-dot {
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+  }
+
+  .dot-red { background: var(--rust); }
+  .dot-amber { background: var(--amber); }
+  .dot-green { background: #27ae60; }
+
+  .progress-bar-wrap {
+    margin-bottom: 2rem;
+    background: var(--rule);
+    height: 4px;
+  }
+
+  .progress-bar-fill {
+    height: 4px;
+    background: var(--sage);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 0.3rem;
+    letter-spacing: 0.1em;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--ink);
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="label">London Rental — Property Inspection</div>
+    <h1>House Viewing<br>Checklist</h1>
+    <div class="subtitle">Click each item to mark as checked</div>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 0 items checked</div>
+  <div id="sections"></div>
+
+  <footer>Take photos of anything concerning · Ask for written confirmation of all repairs</footer>
+</div>
+
+<script>
+const data = [
+  {
+    title: "Mold & Damp — Previous Issues",
+    tag: "critical",
+    tagLabel: "Critical",
+    items: [
+      { text: "Look for mold in the exact areas previously affected", dot: "red" },
+      { text: "Ask to see evidence of professional mold remediation (not just bleach/paint) MOST IMPORTANT", dot: "red" },
+      { text: "Check corners of ceilings, behind furniture, and inside wardrobes", dot: "red" },
+      { text: "Smell for musty odour — fresh paint may be masking damp", note: "Run your hand along walls; cold/wet patches indicate damp beneath", dot: "red" },
+      { text: "Check if wallpaper or plaster is bubbling, staining, or peeling", dot: "red" },
+      { text: "Look at bathroom and kitchen grout/sealant for black mold", dot: "red" },
+      { text: "Check extractor fans in bathroom and kitchen are working", dot: "amber" },    ]
+  },
+  {
+    title: "Plumbing — Previous Leak",
+    tag: "critical",
+    tagLabel: "Critical",
+    items: [
+      { text: "Ask exactly which pipe was leaking and where", note: "Request to see the repaired area directly", dot: "red" },
+      { text: "Look for water staining, warped flooring, or soft floorboards near the leak", dot: "red" },
+      { text: "Check under sinks for moisture, staining, or mould", dot: "red" },
+      { text: "Run all taps and flush toilets — check for leaks or slow drainage", dot: "amber" },
+      { text: "Check water pressure throughout the property", dot: "amber" },
+      { text: "Inspect ceilings below bathrooms for water stains", dot: "red" },
+      { text: "Ask if the repair was done by a certified plumber (request receipt/certificate)", dot: "red" },
+    ]
+  },
+  {
+    title: "Heating & Utilities",
+    tag: "important",
+    tagLabel: "Important",
+    items: [
+      { text: "Test the boiler — ask when it was last serviced", dot: "amber" },
+      { text: "Check radiators in every room heat up properly", dot: "amber" },
+      { text: "Ask for the gas safety certificate (legally required annually)", note: "Landlord must provide this by law", dot: "red" },
+      { text: "Locate the fuse box — check it's modern and labelled", dot: "amber" },
+      { text: "Ask what's included in the rent (council tax, etc.)", dot: "amber" },
+    ]
+  },
+  {
+    title: "Structural & Windows",
+    tag: "important",
+    tagLabel: "Important",
+    items: [
+      { text: "Check window frames for rot, mold, or condensation between panes", dot: "amber" },
+      { text: "Open and close every window — check seals are intact", dot: "amber" },
+    ]
+  },
+  {
+    title: "Kitchen & Appliances",
+    tag: "general",
+    tagLabel: "General",
+    items: [
+      { text: "Briefly test all included appliances (oven, hob)", dot: "green" },
+      { text: "Check inside cupboards for signs of damp or pest activity", dot: "amber" },
+      { text: "Inspect under the sink for leaks or water damage", dot: "amber" },
+    ]
+  },
+  {
+    title: "General Condition",
+    tag: "general",
+    tagLabel: "General",
+    items: [
+      { text: "Take photos of any existing damage — protect your deposit", note: "Date-stamped photos are ideal", dot: "green" },
+      { text: "Check outdoor space, gutters, and drainpipes for blockages", dot: "green" },
+      { text: "Check phone signal and broadband (not necessary)", dot: "green" },
+    ]
+  },
+  {
+    title: "Legal & Admin",
+    tag: "important",
+    tagLabel: "Important",
+    items: [
+      { text: "Confirm deposit is protected in a government scheme (TDS, DPS, myDeposits)", dot: "red" },
+      { text: "Check the tenancy agreement mentions the repairs done", dot: "red" },
+      { text: "Ask about notice periods, rent review clauses, and break clauses", dot: "amber" },
+      { text: "Confirm who is responsible for which repairs in the tenancy agreement", dot: "amber" },
+    ]
+  },
+];
+
+const tagColors = { critical: "tag-critical", important: "tag-important", general: "tag-general" };
+const dotColors = { red: "dot-red", amber: "dot-amber", green: "dot-green" };
+
+let allItems = [];
+
+function render() {
+  const container = document.getElementById('sections');
+  data.forEach((section, si) => {
+    const sec = document.createElement('div');
+    sec.className = 'section';
+
+    const header = document.createElement('div');
+    header.className = 'section-header';
+    header.innerHTML = `<div class="section-title">${section.title}</div><span class="section-tag ${tagColors[section.tag]}">${section.tagLabel}</span>`;
+    sec.appendChild(header);
+
+    const ul = document.createElement('ul');
+    ul.className = 'checklist';
+
+    section.items.forEach((item, ii) => {
+      const id = `${si}-${ii}`;
+      allItems.push(id);
+      const li = document.createElement('li');
+      li.dataset.id = id;
+      li.innerHTML = `<div class="cb"></div><div class="priority-dot ${dotColors[item.dot]}"></div><div class="item-text">${item.text}${item.note ? `<span class="item-note">${item.note}</span>` : ''}</div>`;
+      li.addEventListener('click', () => toggle(li));
+      ul.appendChild(li);
+    });
+
+    sec.appendChild(ul);
+    container.appendChild(sec);
+  });
+  updateProgress();
+}
+
+function toggle(li) {
+  li.classList.toggle('checked');
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = document.querySelectorAll('.checklist li').length;
+  const checked = document.querySelectorAll('.checklist li.checked').length;
+  document.getElementById('progressFill').style.width = total ? (checked / total * 100) + '%' : '0%';
+  document.getElementById('progressLabel').textContent = `${checked} / ${total} items checked`;
+}
+
+render();
+</script>
+</body>
+</html>
